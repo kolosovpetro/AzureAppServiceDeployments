@@ -68,8 +68,8 @@ stages:
 
   - stage: 'windows'
     displayName: 'Deploy App Service Windows'
-    dependsOn: 'Build_Test'
-    condition: succeeded('Build_Test')
+    dependsOn: 'Build'
+    condition: succeeded('Build')
     jobs:
       - deployment: 'Deploy_App_Service_Windows'
         displayName: 'Deploy_App_Service_Windows'
