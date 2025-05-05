@@ -95,3 +95,33 @@ stages:
                     packageForLinux: '$(Pipeline.Workspace)/drop/Release/*.zip'
                     JSONFiles: |
                       **/appsettings.json
+
+  - stage: 'linux'
+    displayName: 'Deploy App Service Linux'
+    dependsOn: 'Build'
+    condition: succeeded('Build')
+    jobs:
+      - deployment: 'Deploy_App_Service_Linux'
+        displayName: 'Deploy_App_Service_Linux'
+        pool:
+          vmImage: ubuntu-latest
+        environment: linux
+        variables:
+          - group: AppSettings_Variable_Group
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploy to Azure Web App'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'AzureConnection'
+                    appType: 'webApp'
+                    WebAppName: 'ase-linux-d01'
+                    packageForLinux: '$(Pipeline.Workspace)/drop/Release/*.zip'
+                    JSONFiles: |
+                      **/appsettings.json
