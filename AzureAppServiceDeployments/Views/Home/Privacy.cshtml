@@ -2,12 +2,16 @@
     ViewData["Title"] = "Privacy Policy";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="text-center">
+    <h1 class="display-4">Privacy</h1>
 
-<ul style="text-align: left">
-    <li><strong>Connection string</strong>: @ViewBag.ConnectionString</li>
-    <li><strong>Blob connection string</strong>: @ViewBag.BlobConnectionString</li>
-    <li><strong>Jwt Sign Guid</strong>: @ViewBag.JwtSignGuid</li>
-    <li><strong>Email Service Api Key</strong>: @ViewBag.EmailServiceApiKey</li>
-    <li><strong>Message</strong>: @ViewBag.Message</li>
-</ul>
+    <ul style="text-align: left">
+        <li><strong>Database Connection string</strong>: @ViewBag.ConnectionString</li>
+        <li><strong>Blob connection string</strong>: @ViewBag.BlobConnectionString</li>
+        <li><strong>JWT Sign Guid</strong>: @ViewBag.JwtSignGuid</li>
+        <li><strong>Email Service API KEY</strong>: @ViewBag.EmailServiceApiKey</li>
+        <li><strong>Message</strong>: @ViewBag.Message</li>
+        <li><strong>Deployed from CI Agent:</strong> @ViewBag.DeployedFromCiAgent</li>
+        <li><strong>Version:</strong> @ViewBag.Version</li>
+    </ul>
+</div>

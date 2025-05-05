@@ -7,45 +7,33 @@ namespace AzureAppServiceDeployments.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ConfigExample _configExample;
+    private readonly Config _config;
 
-    public HomeController(ConfigExample configExample)
+    public HomeController(Config config)
     {
-        _configExample = configExample;
+        _config = config;
     }
 
     public IActionResult Index()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-
-        if (version != null)
-        {
-            var assemblyVersion = version.ToString();
-            ViewBag.Message = $"Your application description page. Version: {assemblyVersion}";
-        }
-
-        ViewBag.ConnectionString = _configExample.ConnectionString;
-        ViewBag.BlobConnectionString = _configExample.BlobConnectionString;
-        ViewBag.JwtSignGuid = _configExample.JwtSignGuid;
-        ViewBag.EmailServiceApiKey = _configExample.EmailServiceApiKey;
+        ViewBag.ConnectionString = _config.ConnectionString;
+        ViewBag.BlobConnectionString = _config.BlobConnectionString;
+        ViewBag.JwtSignGuid = _config.JwtSignGuid;
+        ViewBag.EmailServiceApiKey = _config.EmailServiceApiKey;
+        ViewBag.DeployedFromCiAgent = _config.DeployedFromCiAgent;
+        ViewBag.Version = _config.Version;
 
         return View();
     }
 
     public IActionResult Privacy()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-
-        if (version != null)
-        {
-            var assemblyVersion = version.ToString();
-            ViewBag.Message = $"Your application description page. Version: {assemblyVersion}";
-        }
-
-        ViewBag.ConnectionString = _configExample.ConnectionString;
-        ViewBag.BlobConnectionString = _configExample.BlobConnectionString;
-        ViewBag.JwtSignGuid = _configExample.JwtSignGuid;
-        ViewBag.EmailServiceApiKey = _configExample.EmailServiceApiKey;
+        ViewBag.ConnectionString = _config.ConnectionString;
+        ViewBag.BlobConnectionString = _config.BlobConnectionString;
+        ViewBag.JwtSignGuid = _config.JwtSignGuid;
+        ViewBag.EmailServiceApiKey = _config.EmailServiceApiKey;
+        ViewBag.DeployedFromCiAgent = _config.DeployedFromCiAgent;
+        ViewBag.Version = _config.Version;
 
         return View();
     }
