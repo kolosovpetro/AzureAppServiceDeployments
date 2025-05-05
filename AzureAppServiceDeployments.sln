@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\app-service-deploy.yml = .github\workflows\app-service-deploy.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAppServiceDeployments", "AzureAppServiceDeployments\AzureAppServiceDeployments.csproj", "{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

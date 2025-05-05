@@ -1,10 +1,10 @@
+using AzureAppServiceDeployments.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebApp.Models;
 
-namespace WebApp;
+namespace AzureAppServiceDeployments;
 
 internal static class Program
 {
@@ -15,6 +15,7 @@ internal static class Program
         builder.Services.AddControllersWithViews();
 
         var config = builder.Configuration.GetSection("ConfigExample").Get<ConfigExample>();
+
         builder.Services.AddScoped(_ => config);
 
         var app = builder.Build();

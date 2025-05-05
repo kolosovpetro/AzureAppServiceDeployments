@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
-using WebApp.Models;
+using AzureAppServiceDeployments.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace WebApp.Controllers;
+namespace AzureAppServiceDeployments.Controllers;
 
 public class HomeController : Controller
 {

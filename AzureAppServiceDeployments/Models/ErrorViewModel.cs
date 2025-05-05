@@ -1,6 +1,6 @@
 using System;
 
-namespace WebApp.Models;
+namespace AzureAppServiceDeployments.Models;
 
 public class ErrorViewModel
 {
