@@ -20,6 +20,8 @@ jobs:
       Configuration: 'Release'
       ProjectPath: 'AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
       OutputPath: 'outputs/src'
+      ACTIONS_RUNNER_DEBUG: true
+      ACTIONS_STEP_DEBUG: true
 
 
     steps:
