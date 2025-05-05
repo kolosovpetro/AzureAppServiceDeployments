@@ -1,19 +1,19 @@
-name: Run Build and Test
+name: Build Test
 
 on:
   push:
     branches:
       - master
-      - develop
 
   pull_request:
     branches:
       - master
+
   workflow_dispatch:
 
 jobs:
   build-and-test-dotnet:
-    name: Run Build and Test .NET
+    name: Build Test
     runs-on: ubuntu-latest
 
     env:
@@ -35,24 +35,23 @@ jobs:
 
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v3.2.1
-#        with:
-#          updateAssemblyInfo: true
-#          updateAssemblyInfoFilename: 'WebApp/Properties/AssemblyInfo.cs'
 
-      - name: Setup .NET 6.0 SDK
+      - name: Setup .NET 6.x SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 6.x
 
       - name: Transform appsettings.json
-        uses: microsoft/variable-substitution@v1
+        uses: devops-actions/variable-substitution@v1.2
         with:
           files: 'AzureAppServiceDeployments/appsettings.json'
         env:
-          ConfigExample.ConnectionString: ${{ secrets.DATABASE_URL }}
-          ConfigExample.BlobConnectionString: ${{ secrets.BLOB_URL }}
-          ConfigExample.JwtSignGuid: ${{ secrets.JWT_SIGN_KEY }}
-          ConfigExample.EmailServiceApiKey: ${{ secrets.EMAIL_SERVICE_API_KEY }}
+          Config.ConnectionString: ${{ secrets.DATABASE_URL }}
+          Config.BlobConnectionString: ${{ secrets.BLOB_URL }}
+          Config.JwtSignGuid: ${{ secrets.JWT_SIGN_KEY }}
+          Config.EmailServiceApiKey: ${{ secrets.EMAIL_SERVICE_API_KEY }}
+          Config.Version: ${{ env.GitVersion_SemVer }}
+          Config.DeployedFromCiAgent: 'GitHub Actions'
 
       - name: Restore Nuget Packages
         run: dotnet restore

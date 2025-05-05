@@ -14,7 +14,7 @@ internal static class Program
 
         builder.Services.AddControllersWithViews();
 
-        var config = builder.Configuration.GetSection("ConfigExample").Get<Config>();
+        var config = builder.Configuration.GetSection("Config").Get<Config>();
 
         builder.Services.AddScoped(_ => config);
 
