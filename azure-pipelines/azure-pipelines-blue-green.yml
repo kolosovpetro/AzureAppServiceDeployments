@@ -77,6 +77,8 @@ stages:
     jobs:
       - deployment: Deploy_Staging
         environment: 'staging'
+        variables:
+          - group: AppSettings_Variable_Group_Blue
         pool:
           vmImage: 'ubuntu-latest'
         strategy:
