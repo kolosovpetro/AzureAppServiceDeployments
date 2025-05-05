@@ -1,4 +1,4 @@
-﻿name: Deploy App Service
+name: Deploy App Service
 
 on:
   push:

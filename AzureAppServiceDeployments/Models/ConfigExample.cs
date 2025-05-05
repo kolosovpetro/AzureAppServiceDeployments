@@ -1,4 +1,4 @@
-﻿namespace AzureAppServiceDeployments.Models;
+namespace AzureAppServiceDeployments.Models;
 
 public class ConfigExample
 {
