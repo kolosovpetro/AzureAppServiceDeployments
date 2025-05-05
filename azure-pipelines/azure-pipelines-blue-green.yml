@@ -1,0 +1,100 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  buildConfiguration: 'Release'
+  backendProjectPath: './MyApp/MyApp.csproj'
+
+stages:
+  - stage: Build
+    displayName: 'Build & Publish Artifacts'
+    jobs:
+      - job: Build
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.x'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore'
+            inputs:
+              command: 'restore'
+              projects: '$(backendProjectPath)'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build'
+            inputs:
+              command: 'build'
+              projects: '$(backendProjectPath)'
+              arguments: '--configuration $(buildConfiguration)'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish'
+            inputs:
+              command: 'publish'
+              projects: '$(backendProjectPath)'
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+              zipAfterPublish: true
+
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: drop
+
+  - stage: Deploy_Staging_Blue
+    displayName: 'Deploy to Staging Slot (Blue)'
+    dependsOn: Build
+    jobs:
+      - deployment: Deploy_Staging
+        environment: 'staging'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploy to Azure Web App'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'AzureConnection'
+                    deployToSlotOrASE: true
+                    resourceGroupName: 'rg-web-app-deploy-d01'
+                    slotName: 'staging'
+                    appType: 'webApp'
+                    WebAppName: 'ase-linux-d01'
+                    packageForLinux: '$(Pipeline.Workspace)/drop/Release/*.zip'
+                    JSONFiles: |
+                      **/appsettings.json
+
+  - stage: Swap_Slots
+    displayName: 'Swap Slots'
+    dependsOn: Build
+    jobs:
+      - deployment: Swap_Slots
+        environment: 'production'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Swap Slots'
+                  inputs:
+                    azureSubscription: 'AzureConnection'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az webapp deployment slot swap \
+                        --resource-group rg-web-app-deploy-d01 \
+                        --name ase-linux-d01 \
+                        --slot staging \
+                        --target-slot production
