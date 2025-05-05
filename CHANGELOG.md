@@ -14,3 +14,4 @@ and this project adheres to [Semantic Versioning v2.0.0](https://semver.org/spec
 - Add git version config
 - Add pr validation GHA
 - Minor edits views layout
+- Add terraform configuration
