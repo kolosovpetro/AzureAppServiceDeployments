@@ -1,7 +1,4 @@
-pr:
-  paths:
-    include:
-      - '*'
+pr: none
 
 trigger:
   batch: true
@@ -74,6 +71,7 @@ stages:
   - stage: Deploy_Staging_Blue
     displayName: 'Deploy to Staging Slot (Blue)'
     dependsOn: Build
+    condition: succeeded('Build')
     jobs:
       - deployment: Deploy_Staging
         environment: 'staging'
@@ -105,6 +103,7 @@ stages:
   - stage: Swap_Slots
     displayName: 'Swap Slots'
     dependsOn: Deploy_Staging_Blue
+    condition: succeeded('Deploy_Staging_Blue')
     jobs:
       - deployment: Swap_Slots
         environment: 'production'
@@ -126,3 +125,29 @@ stages:
                         --name ase-linux-d01 \
                         --slot staging \
                         --target-slot production
+
+  - stage: Rollback
+    displayName: 'Rollback'
+    dependsOn: Swap_Slots
+    condition: succeeded('Swap_Slots')
+    jobs:
+      - deployment: Rollback
+        environment: 'production'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Rollback'
+                  inputs:
+                    azureSubscription: 'AzureConnection'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az webapp deployment slot swap \
+                        --resource-group rg-web-app-deploy-d01 \
+                        --name ase-linux-d01 \
+                        --slot production \
+                        --target-slot staging
