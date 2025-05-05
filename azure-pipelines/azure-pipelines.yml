@@ -3,11 +3,6 @@ trigger:
     include:
       - master
 
-pr:
-  branches:
-    include:
-      - '*'
-
 variables:
   buildConfiguration: 'Release'
   backendProjectPath: '$(System.DefaultWorkingDirectory)/AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
