@@ -22,3 +22,4 @@ and this project adheres to [Semantic Versioning v2.0.0](https://semver.org/spec
 - Add azure pipelines linux app service deployment
 - Blue green deployment linux azure pipelines
 - Add deployment slots in terraform
+- Implement blue-green deployment with rollback in azure pipelines
