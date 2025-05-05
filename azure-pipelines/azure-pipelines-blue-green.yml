@@ -1,49 +1,75 @@
+pr:
+  paths:
+    include:
+      - '*'
+
 trigger:
+  batch: true
   branches:
     include:
-      - main
+      - master
+
 
 variables:
   buildConfiguration: 'Release'
-  backendProjectPath: './MyApp/MyApp.csproj'
+  backendProjectPath: '$(System.DefaultWorkingDirectory)/AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
 
 stages:
   - stage: Build
-    displayName: 'Build & Publish Artifacts'
+    displayName: 'Build Stage'
     jobs:
-      - job: Build
+      - job: Build_Test
+        displayName: 'Build'
         pool:
           vmImage: 'ubuntu-latest'
+
         steps:
           - checkout: self
+            fetchDepth: 0
+
           - task: UseDotNet@2
+            displayName: 'Install .NET 6.x SDK'
             inputs:
               packageType: 'sdk'
-              version: '8.x'
+              version: '6.x'
+
+          - task: gitversion/setup@0
+            displayName: 'GitVersion Setup'
+            inputs:
+              versionSpec: '5.9.x'
+
+          - task: gitversion/execute@0
+            displayName: 'GitVersion Execute'
 
           - task: DotNetCoreCLI@2
             displayName: 'Restore'
             inputs:
               command: 'restore'
-              projects: '$(backendProjectPath)'
+              projects: $(backendProjectPath)
+              arguments: '--verbosity minimal'
 
           - task: DotNetCoreCLI@2
             displayName: 'Build'
             inputs:
               command: 'build'
-              projects: '$(backendProjectPath)'
-              arguments: '--configuration $(buildConfiguration)'
+              projects: $(backendProjectPath)
+              arguments: '-c $(buildConfiguration) -p:Version=$(SemVer) --no-restore'
 
           - task: DotNetCoreCLI@2
             displayName: 'Publish'
             inputs:
               command: 'publish'
-              projects: '$(backendProjectPath)'
-              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-              zipAfterPublish: true
+              publishWebProjects: false
+              projects: $(backendProjectPath)
+              arguments: '-p:Version=$(SemVer) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration) --no-build'
 
-          - publish: $(Build.ArtifactStagingDirectory)
-            artifact: drop
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
 
   - stage: Deploy_Staging_Blue
     displayName: 'Deploy to Staging Slot (Blue)'
