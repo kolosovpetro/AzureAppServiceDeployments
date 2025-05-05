@@ -1,4 +1,4 @@
-# Azure AppService Deploy using GitHub Actions
+# Azure AppService Deploy using Azure Pipelines & GitHub Actions
 
 Azure App Service deployments using GitHub Actions and Azure Pipelines.
 This repository contains CI/CD pipeline implementations for deploying .NET applications
