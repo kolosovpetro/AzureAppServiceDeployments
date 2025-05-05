@@ -12,7 +12,7 @@ resource "azurerm_resource_group" "public" {
 ##########################################################################
 
 resource "azurerm_service_plan" "asp" {
-  name                = "asp-demo-${var.prefix}"
+  name                = "asp-prod-${var.prefix}"
   location            = azurerm_resource_group.public.location
   resource_group_name = azurerm_resource_group.public.name
 
@@ -21,7 +21,7 @@ resource "azurerm_service_plan" "asp" {
 }
 
 resource "azurerm_windows_web_app" "app" {
-  name                = "webapp-deploy-${var.prefix}"
+  name                = "ase-prod-${var.prefix}"
   location            = azurerm_resource_group.public.location
   resource_group_name = azurerm_resource_group.public.name
   service_plan_id     = azurerm_service_plan.asp.id
