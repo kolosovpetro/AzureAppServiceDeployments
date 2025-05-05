@@ -1,7 +1,14 @@
+pr:
+  paths:
+    include:
+      - '*'
+
 trigger:
+  batch: true
   branches:
     include:
       - master
+
 
 variables:
   buildConfiguration: 'Release'
