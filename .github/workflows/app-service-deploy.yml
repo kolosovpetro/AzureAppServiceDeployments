@@ -91,3 +91,24 @@ jobs:
           app-name: ase-windows-d01
           publish-profile: ${{ secrets.AZURE_WEBAPP_WINDOWS_PUBLISH_PROFILE }}
           package: ${{ env.OutputPath }}
+
+  deploy-linux:
+    needs: [ build-test ]
+    name: Deploy App Service Linux
+    runs-on: ubuntu-latest
+
+    environment:
+      name: linux
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: drop
+          path: ${{ env.OutputPath }}
+
+      - name: Deploy App Service Linux
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ase-linux-d01
+          publish-profile: ${{ secrets.AZURE_WEBAPP_LINUX_PUBLISH_PROFILE }}
+          package: ${{ env.OutputPath }}
