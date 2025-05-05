@@ -102,7 +102,7 @@ stages:
 
   - stage: Swap_Slots
     displayName: 'Swap Slots'
-    dependsOn: Build
+    dependsOn: Deploy_Staging_Blue
     jobs:
       - deployment: Swap_Slots
         environment: 'production'
