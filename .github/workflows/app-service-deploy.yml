@@ -11,18 +11,17 @@ on:
 
   workflow_dispatch:
 
+env:
+  Configuration: 'Release'
+  ProjectPath: 'AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
+  OutputPath: 'publish/out'
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
+
 jobs:
   build-test:
     name: Build Test
     runs-on: ubuntu-latest
-
-    env:
-      Configuration: 'Release'
-      ProjectPath: 'AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
-      OutputPath: 'outputs/src'
-      ACTIONS_RUNNER_DEBUG: true
-      ACTIONS_STEP_DEBUG: true
-
 
     steps:
       - name: Fetch Sources
