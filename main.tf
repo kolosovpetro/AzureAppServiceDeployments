@@ -64,3 +64,23 @@ resource "azurerm_linux_web_app" "app" {
     }
   }
 }
+
+##########################################################################
+# DEPLOYMENT SLOTS LINUX
+##########################################################################
+
+resource "azurerm_linux_web_app_slot" "staging" {
+  name           = "staging"
+  app_service_id = azurerm_linux_web_app.app.id
+
+  app_settings = {
+    WEBSITE_ENABLE_SYNC_UPDATE_SITE = "true"
+    WEBSITE_RUN_FROM_PACKAGE        = "1"
+  }
+
+  site_config {
+    application_stack {
+      dotnet_version = "6.0"
+    }
+  }
+}
