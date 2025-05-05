@@ -58,5 +58,9 @@ resource "azurerm_linux_web_app" "app" {
     WEBSITE_RUN_FROM_PACKAGE        = "1"
   }
 
-  site_config {}
+  site_config {
+    application_stack {
+      dotnet_version = "6.0"
+    }
+  }
 }
