@@ -1,0 +1,36 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{0ADEAED5-7D0B-4ECC-995A-AA54CE1AF82D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		README.md = README.md
+		.editorconfig = .editorconfig
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{6E8508F0-6477-4C41-B8A0-BC3F27B6ABF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{4F59DF04-64F5-45F1-9767-F88CA7C1B8E5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\run-build-and-test.yml = .github\workflows\run-build-and-test.yml
+		.github\workflows\app-service-deploy.yml = .github\workflows\app-service-deploy.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAppServiceDeployments", "AzureAppServiceDeployments\AzureAppServiceDeployments.csproj", "{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21C329CB-CE54-4BCD-AB1C-8AFA6A02B416}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4F59DF04-64F5-45F1-9767-F88CA7C1B8E5} = {6E8508F0-6477-4C41-B8A0-BC3F27B6ABF9}
+	EndGlobalSection
+EndGlobal

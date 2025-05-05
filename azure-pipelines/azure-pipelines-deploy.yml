@@ -1,0 +1,127 @@
+pr: none
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+
+
+variables:
+  buildConfiguration: 'Release'
+  backendProjectPath: '$(System.DefaultWorkingDirectory)/AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
+
+stages:
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: Build_Test
+        displayName: 'Build'
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - task: UseDotNet@2
+            displayName: 'Install .NET 6.x SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '6.x'
+
+          - task: gitversion/setup@0
+            displayName: 'GitVersion Setup'
+            inputs:
+              versionSpec: '5.9.x'
+
+          - task: gitversion/execute@0
+            displayName: 'GitVersion Execute'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore'
+            inputs:
+              command: 'restore'
+              projects: $(backendProjectPath)
+              arguments: '--verbosity minimal'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build'
+            inputs:
+              command: 'build'
+              projects: $(backendProjectPath)
+              arguments: '-c $(buildConfiguration) -p:Version=$(SemVer) --no-restore'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish'
+            inputs:
+              command: 'publish'
+              publishWebProjects: false
+              projects: $(backendProjectPath)
+              arguments: '-p:Version=$(SemVer) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration) --no-build'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+  - stage: 'windows'
+    displayName: 'Windows Deploy'
+    dependsOn: 'Build'
+    condition: succeeded('Build')
+    jobs:
+      - deployment: 'Deploy_App_Service_Windows'
+        displayName: 'Deploy_App_Service_Windows'
+        pool:
+          vmImage: ubuntu-latest
+        environment: windows
+        variables:
+          - group: AppSettings_Variable_Group
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploy to Azure Web App'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'AzureConnection'
+                    appType: 'webApp'
+                    WebAppName: 'ase-windows-d01'
+                    packageForLinux: '$(Pipeline.Workspace)/drop/Release/*.zip'
+                    JSONFiles: |
+                      **/appsettings.json
+
+  - stage: 'linux'
+    displayName: 'Linux Deploy'
+    dependsOn: 'Build'
+    condition: succeeded('Build')
+    jobs:
+      - deployment: 'Deploy_App_Service_Linux'
+        displayName: 'Deploy_App_Service_Linux'
+        pool:
+          vmImage: ubuntu-latest
+        environment: linux
+        variables:
+          - group: AppSettings_Variable_Group
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploy to Azure Web App'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'AzureConnection'
+                    appType: 'webApp'
+                    WebAppName: 'ase-linux-d01'
+                    packageForLinux: '$(Pipeline.Workspace)/drop/Release/*.zip'
+                    JSONFiles: |
+                      **/appsettings.json
