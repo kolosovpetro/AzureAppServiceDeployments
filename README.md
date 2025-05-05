@@ -7,16 +7,16 @@ including blue-green deployments and rollback strategies.
 
 ## Features
 
-- ✅ GitHub Actions for:
+- **GitHub Actions for:**
     - Windows App Service deployment
     - Linux App Service deployment
     - Pull request validation
-- ✅ Azure Pipelines for:
+- **Azure Pipelines for:**
     - Building .NET application
     - Windows App Service deployment
     - Linux App Service deployment
     - Blue-green deployment with rollback
-- ✅ Infrastructure as Code using Terraform
+- **Infrastructure as Code using Terraform**
     - Azure App Service (Windows & Linux)
 
 ## Azure Pipelines
