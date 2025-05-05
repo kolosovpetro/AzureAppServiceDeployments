@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning v2.0.0](https://semver.org/spec
 - Bump github actions
 - Add nuget config
 - Add git version config
+- Add pr validation GHA

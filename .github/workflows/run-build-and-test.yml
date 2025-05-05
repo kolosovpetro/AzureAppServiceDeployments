@@ -7,36 +7,37 @@ on:
       - develop
 
   pull_request:
-    branches: [ develop ]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
   build-and-test-dotnet:
     name: Run Build and Test .NET
     runs-on: ubuntu-latest
-    
+
     env:
       Configuration: 'Release'
-      ProjectPath: 'WebApp/WebApp.csproj'
-      BuildPath: 'outputs/src'
-    
-    
+      ProjectPath: 'AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
+      OutputPath: 'outputs/src'
+
+
     steps:
       - name: Fetch Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.15
+        uses: gittools/actions/gitversion/setup@v3.2.1
         with:
-          versionSpec: '5.x'
+          versionSpec: '6.x'
 
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0.9.15
-        with:
-          updateAssemblyInfo: true
-          updateAssemblyInfoFilename: 'WebApp/Properties/AssemblyInfo.cs'
+        uses: gittools/actions/gitversion/execute@v3.2.1
+#        with:
+#          updateAssemblyInfo: true
+#          updateAssemblyInfoFilename: 'WebApp/Properties/AssemblyInfo.cs'
 
       - name: Setup .NET 6.0 SDK
         uses: actions/setup-dotnet@v3
@@ -46,7 +47,7 @@ jobs:
       - name: Transform appsettings.json
         uses: microsoft/variable-substitution@v1
         with:
-          files: 'WebApp/appsettings.json'
+          files: 'AzureAppServiceDeployments/appsettings.json'
         env:
           ConfigExample.ConnectionString: ${{ secrets.DATABASE_URL }}
           ConfigExample.BlobConnectionString: ${{ secrets.BLOB_URL }}
@@ -58,14 +59,14 @@ jobs:
 
       - name: Build .NET Solution
         run: |
-          dotnet build --no-restore /p:ContinuousIntegrationBuild=true --configuration $Configuration
+          dotnet build *.sln --no-restore /p:ContinuousIntegrationBuild=true --configuration $Configuration
 
       - name: Run .NET Publish
         run: |
-          dotnet publish $ProjectPath --configuration $Configuration --output $BuildPath --no-build
+          dotnet publish $ProjectPath --configuration $Configuration --output $OutputPath --no-build
 
       - name: Drop Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: drop
-          path: "${{ env.BuildPath }}"
+          path: ${{ env.OutputPath }}
