@@ -1,0 +1,153 @@
+pr: none
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+
+
+variables:
+  buildConfiguration: 'Release'
+  backendProjectPath: '$(System.DefaultWorkingDirectory)/AzureAppServiceDeployments/AzureAppServiceDeployments.csproj'
+
+stages:
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: Build_Test
+        displayName: 'Build'
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - task: UseDotNet@2
+            displayName: 'Install .NET 6.x SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '6.x'
+
+          - task: gitversion/setup@0
+            displayName: 'GitVersion Setup'
+            inputs:
+              versionSpec: '5.9.x'
+
+          - task: gitversion/execute@0
+            displayName: 'GitVersion Execute'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore'
+            inputs:
+              command: 'restore'
+              projects: $(backendProjectPath)
+              arguments: '--verbosity minimal'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build'
+            inputs:
+              command: 'build'
+              projects: $(backendProjectPath)
+              arguments: '-c $(buildConfiguration) -p:Version=$(SemVer) --no-restore'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish'
+            inputs:
+              command: 'publish'
+              publishWebProjects: false
+              projects: $(backendProjectPath)
+              arguments: '-p:Version=$(SemVer) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration) --no-build'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+
+  - stage: Deploy_Staging_Blue
+    displayName: 'Deploy to Staging Slot (Blue)'
+    dependsOn: Build
+    condition: succeeded('Build')
+    jobs:
+      - deployment: Deploy_Staging
+        environment: 'staging'
+        variables:
+          - group: AppSettings_Variable_Group_Blue
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploy to Azure Web App'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'AzureConnection'
+                    deployToSlotOrASE: true
+                    resourceGroupName: 'rg-web-app-deploy-d01'
+                    slotName: 'staging'
+                    appType: 'webApp'
+                    WebAppName: 'ase-linux-d01'
+                    packageForLinux: '$(Pipeline.Workspace)/drop/Release/*.zip'
+                    JSONFiles: |
+                      **/appsettings.json
+
+  - stage: Swap_Slots
+    displayName: 'Swap Slots'
+    dependsOn: Deploy_Staging_Blue
+    condition: succeeded('Deploy_Staging_Blue')
+    jobs:
+      - deployment: Swap_Slots
+        environment: 'production'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Swap Slots'
+                  inputs:
+                    azureSubscription: 'AzureConnection'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az webapp deployment slot swap \
+                        --resource-group rg-web-app-deploy-d01 \
+                        --name ase-linux-d01 \
+                        --slot staging \
+                        --target-slot production
+
+  - stage: Rollback
+    displayName: 'Rollback'
+    dependsOn: Swap_Slots
+    condition: succeeded('Swap_Slots')
+    jobs:
+      - deployment: Rollback
+        environment: 'production'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Rollback'
+                  inputs:
+                    azureSubscription: 'AzureConnection'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az webapp deployment slot swap \
+                        --resource-group rg-web-app-deploy-d01 \
+                        --name ase-linux-d01 \
+                        --slot production \
+                        --target-slot staging

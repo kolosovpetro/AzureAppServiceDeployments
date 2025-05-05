@@ -1,25 +1,41 @@
-# Azure AppService Deploy using Github Actions
+# Azure AppService Deploy using GitHub Actions
 
-Deploy azure app service using github actions
+Azure App Service deployments using GitHub Actions and Azure Pipelines.
+This repository contains CI/CD pipeline implementations for deploying .NET applications
+to Azure App Services on both Windows and Linux,
+including blue-green deployments and rollback strategies.
 
-## Variables transform
+## Features
 
-- `Config.ConnectionString`:
-  `Server=localhost,1433;Database=MANGO_DEV;User Id=sa;Password=x2yiJt!Fs;TrustServerCertificate=true;`
-- `Config.BlobConnectionString`:
-  `AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;`
-- `Config.JwtSignGuid`: `00b01c41-074a-4949-85dc-31658e2e2a8c`
-- `Config.EmailServiceApiKey`: `aba2e8bf-5cda-4f76-b579-f145290f7a2d`
+- **GitHub Actions for:**
+    - Windows App Service deployment
+    - Linux App Service deployment
+    - Pull request validation
+- **Azure Pipelines for:**
+    - Building .NET application
+    - Windows App Service deployment
+    - Linux App Service deployment
+    - Blue-green deployment with rollback
+- **Infrastructure as Code using Terraform**
+    - Azure App Service (Windows & Linux)
 
 ## Azure Pipelines
 
-- https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/azure-rm-web-app-deployment-v4?view=azure-pipelines
+- [Azure Web App Deploy Task](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/azure-rm-web-app-deployment-v4?view=azure-pipelines)
 
 ## GitHub Actions
 
-- https://learn.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel
-- https://github.com/GitTools/actions/blob/main/docs/examples/github/gitversion/setup.md
-- https://github.com/devops-actions/variable-substitution
-- https://github.com/actions/upload-artifact
-- https://github.com/actions/download-artifact
-- https://github.com/Azure/webapps-deploy
+- [Azure App Service Deployment using GitHub Actions](https://learn.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel)
+- [GitVersion GitHub Action](https://github.com/GitTools/actions/blob/main/docs/examples/github/gitversion/setup.md)
+- [Variable Substitution](https://github.com/devops-actions/variable-substitution)
+- [Upload Artifact](https://github.com/actions/upload-artifact)
+- [Download Artifact](https://github.com/actions/download-artifact)
+- [Azure WebApps Deploy Action](https://github.com/Azure/webapps-deploy)
+
+## Changelog Summary
+
+- Added CI/CD with GitHub Actions and Azure Pipelines
+- Implemented infrastructure with Terraform including App Services and slots
+- Enabled blue-green deployments with rollback capabilities
+- Integrated GitVersion and NuGet configuration
+- Applied semantic versioning and changelog standards

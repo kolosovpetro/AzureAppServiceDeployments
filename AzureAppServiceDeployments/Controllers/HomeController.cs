@@ -22,6 +22,7 @@ public class HomeController : Controller
         ViewBag.EmailServiceApiKey = _config.EmailServiceApiKey;
         ViewBag.DeployedFromCiAgent = _config.DeployedFromCiAgent;
         ViewBag.Version = _config.Version;
+        ViewBag.Slot = _config.Slot;
 
         return View();
     }
@@ -34,6 +35,7 @@ public class HomeController : Controller
         ViewBag.EmailServiceApiKey = _config.EmailServiceApiKey;
         ViewBag.DeployedFromCiAgent = _config.DeployedFromCiAgent;
         ViewBag.Version = _config.Version;
+        ViewBag.Slot = _config.Slot;
 
         return View();
     }
