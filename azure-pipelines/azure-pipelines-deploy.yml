@@ -67,7 +67,7 @@ stages:
               publishLocation: 'Container'
 
   - stage: 'windows'
-    displayName: 'Deploy App Service Windows'
+    displayName: 'Windows Deploy'
     dependsOn: 'Build'
     condition: succeeded('Build')
     jobs:
@@ -97,7 +97,7 @@ stages:
                       **/appsettings.json
 
   - stage: 'linux'
-    displayName: 'Deploy App Service Linux'
+    displayName: 'Linux Deploy'
     dependsOn: 'Build'
     condition: succeeded('Build')
     jobs:
