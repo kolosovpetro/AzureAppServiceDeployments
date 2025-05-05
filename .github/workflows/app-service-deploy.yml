@@ -85,9 +85,6 @@ jobs:
           name: drop
           path: ${{ env.OutputPath }}
 
-      - name: Directory list
-        run: ls -lsa ${{ env.OutputPath }}
-
       - name: 'Azure App Service Deploy'
         uses: azure/webapps-deploy@v2
         with:
